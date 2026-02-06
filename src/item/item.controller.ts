@@ -10,6 +10,12 @@ import {
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { ItemDto } from './item.dto';
+import { UseGuards, SetMetadata } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+
+// Custom decorator for roles
+export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
 @Controller('item')
 export class ItemController {
@@ -21,6 +27,7 @@ export class ItemController {
     return this.itemService.getItems();
   }
 
+  @UseGuards(JwtAuthGuard) /**Requires login */
   @Post()
   public postItem(@Body() item: ItemDto) {
     return this.itemService.postItem(item);
@@ -41,6 +48,8 @@ export class ItemController {
     return this.itemService.putItemById(id, propertyName, propertyValue);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin') /**Only Admin can delete */
   @Delete(':id')
   public async deleteItemById(@Param('id') id: number) {
     return this.itemService.deleteItemById(id);
