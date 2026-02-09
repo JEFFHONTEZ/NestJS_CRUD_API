@@ -44,19 +44,16 @@ export class ItemService {
 
   public async putItemById(
     id: number,
-    propertyName: string,
-    propertyValue: string,
+    updateData: Partial<ItemDto>, // Use Partial to allow any combination of Item properties
   ): Promise<ItemDto> {
-    // const update = {};
-    // update[propertyName] = propertyValue;
     const item = await this.itemModel
       .findOneAndUpdate(
         { id },
-        {
-          [propertyName]: propertyValue,
-        },
+        updateData, // TypeScript now knows this matches the Item structure
+        { new: true, runValidators: true },
       )
       .exec();
+
     if (!item) {
       throw new HttpException('Not Found', 404);
     }

@@ -6,7 +6,7 @@ import {
   Param,
   Post,
   Put,
-  Query,
+  // Query,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { ItemDto } from './item.dto';
@@ -38,15 +38,25 @@ export class ItemController {
     return this.itemService.getItemById(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Put(':id')
   public async putItemById(
     @Param('id') id: number,
-    @Query() query: { property_name?: string; property_value?: string },
+    @Body() updateItemDto: Partial<ItemDto>, // Type the body here as well
   ) {
-    const propertyName = query.property_name ?? '';
-    const propertyValue = query.property_value ?? '';
-    return this.itemService.putItemById(id, propertyName, propertyValue);
+    return this.itemService.putItemById(id, updateItemDto);
   }
+
+  // @Put(':id')
+  // public async putItemById(
+  //   @Param('id') id: number,
+  //   @Query() query: { property_name?: string; property_value?: string },
+  // ) {
+  //   const propertyName = query.property_name ?? '';
+  //   const propertyValue = query.property_value ?? '';
+  //   return this.itemService.putItemById(id, propertyName, propertyValue);
+  // }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin') /**Only Admin can delete */
