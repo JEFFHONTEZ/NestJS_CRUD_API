@@ -27,9 +27,10 @@ export class ItemController {
     return this.itemService.getItems();
   }
 
-  @UseGuards(JwtAuthGuard) /**Requires login */
+  /**Requires login */
+  @UseGuards(JwtAuthGuard)
   @Post()
-  public postItem(@Body() item: ItemDto) {
+  public postItem(@Body() item: Omit<ItemDto, 'id'>) {
     return this.itemService.postItem(item);
   }
 

@@ -21,9 +21,16 @@ export class ItemService {
     return items;
   }
 
-  public async postItem(newItem: ItemDto) {
-    const item = await this.itemModel.create(newItem);
-    return item.save();
+  public async postItem(newItem: Omit<ItemDto, 'id'>) {
+    // Find the current highest id and increment it (starts at 1 if empty)
+    const lastItem = await this.itemModel
+      .findOne({}, { id: 1 })
+      .sort({ id: -1 })
+      .exec();
+    const nextId = lastItem ? lastItem.id + 1 : 1;
+
+    const item = await this.itemModel.create({ ...newItem, id: nextId });
+    return item;
   }
 
   public async getItemById(id: number): Promise<ItemDto> {
