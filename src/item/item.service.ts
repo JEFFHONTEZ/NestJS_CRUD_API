@@ -23,6 +23,7 @@ export class ItemService {
 
   public async postItem(newItem: Omit<ItemDto, 'id'>) {
     // Find the current highest id and increment it (starts at 1 if empty)
+    //
     const lastItem = await this.itemModel
       .findOne({}, { id: 1 })
       .sort({ id: -1 })
